@@ -74,7 +74,7 @@ function AuthPage() {
     setBusy(true);
     try {
       const redirectUrl = `${window.location.origin}/`;
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: email.trim(),
         password,
         options: {
@@ -83,9 +83,15 @@ function AuthPage() {
         },
       });
       if (error) throw error;
-      toast.success("Account created! You can now log in.");
-      setMode("login");
-      setIdentifier(email);
+      
+      if (data?.session) {
+        toast.success("Account created! Logging you in...");
+        navigate({ to: "/dashboard" });
+      } else {
+        toast.success("Account created! You can now log in.");
+        setMode("login");
+        setIdentifier(email);
+      }
     } catch (err: any) {
       toast.error(err.message ?? "Sign up failed");
     } finally {
