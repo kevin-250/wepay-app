@@ -52,7 +52,7 @@ WePay may update these terms from time to time. Continued use of the platform af
 7. Contact
 For questions about these terms, contact WePay support through the in-app support screen.
 
-[End of placeholder terms — replace with final legal copy.]
+
 `;
 
 // Read-only viewer for Settings — no Accept/Decline, just for re-reading the terms.
