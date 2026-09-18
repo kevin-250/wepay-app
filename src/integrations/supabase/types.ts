@@ -270,6 +270,8 @@ export type Database = {
       }
       profiles: {
         Row: {
+          accepted_terms: boolean
+          accepted_terms_at: string | null
           address: string | null
           created_at: string
           email: string | null
@@ -285,6 +287,8 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          accepted_terms?: boolean
+          accepted_terms_at?: string | null
           address?: string | null
           created_at?: string
           email?: string | null
@@ -300,6 +304,8 @@ export type Database = {
           user_id: string
         }
         Update: {
+          accepted_terms?: boolean
+          accepted_terms_at?: string | null
           address?: string | null
           created_at?: string
           email?: string | null

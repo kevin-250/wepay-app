@@ -14,6 +14,8 @@ type Profile = {
   notify_email: boolean;
   notify_sms: boolean;
   notify_inapp: boolean;
+  accepted_terms: boolean;
+  accepted_terms_at: string | null;
 };
 
 type AuthCtx = {

@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { AppLayout } from "@/components/AppLayout";
 import { Outlet } from "@tanstack/react-router";
 import { Logo } from "@/components/Logo";
+import { TermsModal } from "@/components/TermsModal";
 
 export const Route = createFileRoute("/_authenticated")({
   component: AuthenticatedLayout,
@@ -29,6 +30,7 @@ function AuthenticatedLayout() {
 
   return (
     <AppLayout>
+      <TermsModal />
       <Outlet />
     </AppLayout>
   );

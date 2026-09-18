@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { TermsViewer } from "@/components/TermsModal";
 import { useI18n, type Lang } from "@/lib/i18n";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,7 +26,7 @@ export const Route = createFileRoute("/_authenticated/settings")({
 
 function Settings() {
   const { t, lang, setLang } = useI18n();
-  const { profile, user, refreshProfile, signOut } = useAuth();
+  const { profile, user, isAdmin, refreshProfile, signOut } = useAuth();
   const navigate = useNavigate();
 
   const [fullName, setFullName] = useState(profile?.full_name ?? "");
@@ -127,6 +128,17 @@ function Settings() {
           {savingProfile && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{t("common.save")}
         </Button>
       </Card>
+
+      {!isAdmin && (
+        <Card className="space-y-4 p-6">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+            Legal
+          </h2>
+          <TermsViewer>
+            <Button variant="outline">View Terms & Conditions</Button>
+          </TermsViewer>
+        </Card>
+      )}
 
       <Card className="space-y-4 p-6">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">{t("settings.security")}</h2>
