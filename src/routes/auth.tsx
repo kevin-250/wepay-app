@@ -25,7 +25,7 @@ type Mode = "login" | "register" | "forgot";
 
 function AuthPage() {
   const { t } = useI18n();
-  const { session, loading } = useAuth();
+  const { session, loading, isAdmin, homeTo } = useAuth();
   const navigate = useNavigate();
   const [mode, setMode] = useState<Mode>("login");
   const [busy, setBusy] = useState(false);
@@ -38,8 +38,8 @@ function AuthPage() {
   const [phone, setPhone] = useState("");
 
   useEffect(() => {
-    if (!loading && session) navigate({ to: "/dashboard", replace: true });
-  }, [session, loading, navigate]);
+    if (!loading && session) navigate({ to: homeTo, replace: true });
+  }, [session, loading, homeTo, navigate]);
 
   // Resolve a login identifier (phone or national ID) to its email via profiles.
   const resolveEmail = async (id: string): Promise<string | null> => {
@@ -58,10 +58,16 @@ function AuthPage() {
         toast.error("No account found for that identifier.");
         return;
       }
-      const { error } = await supabase.auth.signInWithPassword({ email: loginEmail, password });
+      const { data, error } = await supabase.auth.signInWithPassword({ email: loginEmail, password });
       if (error) throw error;
       toast.success(t("auth.welcomeBack"));
-      navigate({ to: "/dashboard" });
+      const uid = data.user?.id;
+      let admin = isAdmin;
+      if (uid) {
+        const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", uid);
+        admin = !!roles?.some((r) => r.role === "admin");
+      }
+      navigate({ to: admin ? "/admin" : "/dashboard", replace: true });
     } catch (err: any) {
       toast.error(err.message ?? "Login failed");
     } finally {
@@ -121,14 +127,14 @@ function AuthPage() {
       <div className="relative hidden flex-col justify-between bg-primary p-12 text-primary-foreground lg:flex">
         <Logo light />
         <div className="space-y-6">
-          <h1 className="text-4xl font-extrabold leading-tight">
+          <h1 className="text-hero font-extrabold leading-tight">
             Refinance your loan, online and on your terms.
           </h1>
-          <p className="max-w-md text-primary-foreground/80">
+          <p className="max-w-md text-primary-foreground/80 text-body">
             WePay helps Rwandan citizens restructure existing bank loans into manageable financing
             backed by collateral — without visiting an office.
           </p>
-          <ul className="space-y-3 text-sm">
+          <ul className="space-y-3 text-body">
             {["Apply in minutes with a guided wizard", "Track every step to repayment", "Secure document storage"].map(
               (f) => (
                 <li key={f} className="flex items-center gap-2">
@@ -138,19 +144,19 @@ function AuthPage() {
             )}
           </ul>
         </div>
-        <p className="text-xs text-primary-foreground/60">© WePay Rwanda Ltd</p>
+        <p className="text-label text-primary-foreground/60">© WePay Rwanda Ltd</p>
       </div>
 
       {/* Form panel */}
-      <div className="flex items-center justify-center bg-background p-6">
-        <Card className="w-full max-w-md p-8">
+      <div className="flex items-center justify-center bg-bg p-6">
+        <Card className="w-full max-w-md">
           <div className="mb-6 lg:hidden">
             <Logo />
           </div>
-          <h2 className="text-2xl font-bold text-foreground">
+          <h2 className="text-heading text-foreground">
             {mode === "login" ? t("auth.welcomeBack") : mode === "register" ? t("auth.createTitle") : t("auth.reset")}
           </h2>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-1 text-body">
             {mode === "login"
               ? "Log in with your email, phone, or National ID."
               : mode === "register"
@@ -168,13 +174,13 @@ function AuthPage() {
                 <Label htmlFor="password">{t("auth.password")}</Label>
                 <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
               </div>
-              <button type="button" onClick={() => setMode("forgot")} className="text-sm font-medium text-primary hover:underline">
+              <button type="button" onClick={() => setMode("forgot")} className="text-label font-medium text-primary hover:underline">
                 {t("auth.forgot")}
               </button>
               <Button type="submit" className="w-full" disabled={busy}>
                 {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} {t("auth.login")}
               </Button>
-              <p className="text-center text-sm text-muted-foreground">
+              <p className="text-center text-body">
                 {t("auth.noAccount")}{" "}
                 <button type="button" onClick={() => setMode("register")} className="font-semibold text-primary hover:underline">
                   {t("auth.signupCta")}
@@ -210,7 +216,7 @@ function AuthPage() {
               <Button type="submit" className="w-full" disabled={busy}>
                 {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} {t("auth.register")}
               </Button>
-              <p className="text-center text-sm text-muted-foreground">
+              <p className="text-center text-body">
                 {t("auth.haveAccount")}{" "}
                 <button type="button" onClick={() => setMode("login")} className="font-semibold text-primary hover:underline">
                   {t("auth.loginCta")}
@@ -228,7 +234,7 @@ function AuthPage() {
               <Button type="submit" className="w-full" disabled={busy}>
                 {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} {t("auth.reset")}
               </Button>
-              <p className="text-center text-sm text-muted-foreground">
+              <p className="text-center text-body">
                 <button type="button" onClick={() => setMode("login")} className="font-semibold text-primary hover:underline">
                   {t("auth.loginCta")}
                 </button>

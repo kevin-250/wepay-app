@@ -38,9 +38,15 @@ function PayPage() {
   const [payDate, setPayDate] = useState("");
 
   const { data: loan } = useQuery({
-    queryKey: ["loan", id],
+    queryKey: ["loan", id, user?.id],
+    enabled: !!user,
     queryFn: async () => {
-      const { data } = await supabase.from("loans").select("*").eq("id", id).maybeSingle();
+      const { data } = await supabase
+        .from("loans")
+        .select("*")
+        .eq("id", id)
+        .eq("user_id", user!.id)
+        .maybeSingle();
       return data;
     },
   });
@@ -74,7 +80,7 @@ function PayPage() {
         payment_date: payDate,
         status: "paid",
       });
-      await supabase.from("loans").update({ status: "verifying_payment" }).eq("id", loan.id);
+      await supabase.from("loans").update({ status: "verifying_payment" }).eq("id", loan.id).eq("user_id", user.id);
       await supabase.from("notifications").insert({
         user_id: user.id,
         title: "Payment proof received",

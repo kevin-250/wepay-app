@@ -280,7 +280,7 @@ function KpiCard({
   accent?: boolean;
 }) {
   return (
-    <Card className="flex flex-col gap-3 p-4 shadow-sm border border-border bg-card transition-all hover:shadow-md">
+    <Card className="flex flex-col gap-3 p-4 border border-border bg-card">
       <div className="flex items-center justify-between">
         <span className="text-xs font-bold text-muted-foreground tracking-wide">{title}</span>
         <div className={`flex h-7.5 w-7.5 items-center justify-center rounded-lg bg-primary/10 text-primary ${accent ? "text-warning bg-warning/15" : ""}`}>

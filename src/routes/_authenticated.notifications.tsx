@@ -23,21 +23,27 @@ function Notifications() {
     queryKey: ["notifications", user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const { data } = await supabase.from("notifications").select("*").order("created_at", { ascending: false });
+      const { data } = await supabase
+        .from("notifications")
+        .select("*")
+        .eq("user_id", user!.id)
+        .order("created_at", { ascending: false });
       return data ?? [];
     },
   });
 
   const markRead = async (id: string) => {
-    await supabase.from("notifications").update({ read: true }).eq("id", id);
-    qc.invalidateQueries({ queryKey: ["notifications", user?.id] });
-    qc.invalidateQueries({ queryKey: ["unread-notifs", user?.id] });
+    if (!user) return;
+    await supabase.from("notifications").update({ read: true }).eq("id", id).eq("user_id", user.id);
+    qc.invalidateQueries({ queryKey: ["notifications", user.id] });
+    qc.invalidateQueries({ queryKey: ["unread-notifs", user.id] });
   };
 
   const markAll = async () => {
-    await supabase.from("notifications").update({ read: true }).eq("read", false);
-    qc.invalidateQueries({ queryKey: ["notifications", user?.id] });
-    qc.invalidateQueries({ queryKey: ["unread-notifs", user?.id] });
+    if (!user) return;
+    await supabase.from("notifications").update({ read: true }).eq("read", false).eq("user_id", user.id);
+    qc.invalidateQueries({ queryKey: ["notifications", user.id] });
+    qc.invalidateQueries({ queryKey: ["unread-notifs", user.id] });
   };
 
   return (

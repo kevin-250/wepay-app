@@ -63,10 +63,13 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     queryKey: ["unread-notifs", user?.id],
     enabled: !!user,
     refetchInterval: 30000,
+    refetchIntervalInBackground: false,
+    refetchOnWindowFocus: false,
     queryFn: async () => {
       const { count } = await supabase
         .from("notifications")
         .select("*", { count: "exact", head: true })
+        .eq("user_id", user!.id)
         .eq("read", false);
       return count ?? 0;
     },
@@ -78,7 +81,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   };
 
   const NavItems = () => (
-    <nav className="flex flex-1 flex-col gap-1 p-3">
+    <nav className="flex flex-1 flex-col gap-2 p-4">
       {navItems.map((item) => {
         const active = pathname === item.to || pathname.startsWith(item.to + "/");
         const Icon = item.icon;
@@ -88,16 +91,16 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             to={item.to}
             onClick={() => setOpen(false)}
             className={cn(
-              "flex items-center gap-3 rounded-md border-l-4 px-3 py-2.5 text-sm font-medium transition-colors",
+              "flex items-center gap-3 rounded-full px-4 py-2.5 text-sm font-medium transition-all duration-150",
               active
-                ? "border-primary bg-accent text-accent-foreground"
-                : "border-transparent text-muted-foreground hover:bg-secondary hover:text-foreground",
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:bg-accent hover:text-foreground",
             )}
           >
             <Icon className="h-[18px] w-[18px]" />
             <span className="flex-1">{t(item.key)}</span>
             {item.key === "nav.notifications" && unread > 0 && (
-              <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground">
+              <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 text-[10px] font-bold text-destructive-foreground">
                 {unread}
               </span>
             )}
@@ -108,45 +111,45 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-bg">
       {/* Header */}
-      <header className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between bg-primary px-4 text-primary-foreground shadow-sm">
+      <header className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between bg-surface border-b border-border px-4 text-foreground shadow-xs">
         <div className="flex items-center gap-3">
           <button
-            className="rounded-md p-1.5 hover:bg-white/10 lg:hidden"
+            className="rounded-full p-2 hover:bg-accent transition-colors lg:hidden"
             onClick={() => setOpen((v) => !v)}
             aria-label="Toggle menu"
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
-          <Logo light />
+          <Logo />
         </div>
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1 rounded-md bg-white/10 p-0.5 text-xs">
+          <div className="flex items-center gap-1 rounded-full border border-border bg-elevated p-1 text-xs shadow-xs">
             {LANGS.map((l) => (
               <button
                 key={l.code}
                 onClick={() => setLang(l.code)}
                 className={cn(
-                  "rounded px-2 py-1 font-semibold transition-colors",
-                  lang === l.code ? "bg-white text-primary" : "text-white/80 hover:text-white",
+                  "rounded-full px-3 py-1.5 font-semibold transition-all duration-150",
+                  lang === l.code ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 {l.label}
               </button>
             ))}
           </div>
-          <span className="hidden text-sm font-medium sm:block">
+          <span className="hidden text-sm font-medium sm:block text-heading">
             {profile?.full_name ?? user?.email}
           </span>
         </div>
       </header>
 
       {/* Sidebar (desktop) */}
-      <aside className="fixed inset-y-0 left-0 top-16 hidden w-[260px] flex-col border-r border-border bg-sidebar lg:flex">
+      <aside className="fixed inset-y-0 left-0 top-16 hidden w-[260px] flex-col border-r border-border bg-surface shadow-sm lg:flex">
         <NavItems />
         <div className="border-t border-border p-3">
-          <Button variant="ghost" className="w-full justify-start text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={handleSignOut}>
+          <Button variant="ghost" className="w-full justify-start text-destructive hover:bg-destructive/10 hover:text-destructive rounded-full" onClick={handleSignOut}>
             <LogOut className="mr-2 h-4 w-4" /> {t("nav.signout")}
           </Button>
         </div>
@@ -155,11 +158,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       {/* Sidebar (mobile) */}
       {open && (
         <div className="fixed inset-0 top-16 z-30 lg:hidden">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setOpen(false)} />
-          <aside className="absolute inset-y-0 left-0 flex w-[260px] flex-col bg-sidebar">
+          <div className="absolute inset-0 bg-scrim" onClick={() => setOpen(false)} />
+          <aside className="absolute inset-y-0 left-0 flex w-[260px] flex-col bg-elevated shadow-xl">
             <NavItems />
             <div className="border-t border-border p-3">
-              <Button variant="ghost" className="w-full justify-start text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={handleSignOut}>
+              <Button variant="ghost" className="w-full justify-start text-destructive hover:bg-destructive/10 hover:text-destructive rounded-full" onClick={handleSignOut}>
                 <LogOut className="mr-2 h-4 w-4" /> {t("nav.signout")}
               </Button>
             </div>

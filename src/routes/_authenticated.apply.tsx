@@ -170,13 +170,13 @@ function ApplyWizard() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-foreground">{t("wizard.title")}</h1>
+      <h1 className="text-heading text-foreground">{t("wizard.title")}</h1>
 
-      <Card className="p-6">
+      <Card>
         <Timeline steps={steps.map((label) => ({ label }))} current={step} />
       </Card>
 
-      <Card className="space-y-5 p-6">
+      <Card className="space-y-5">
         {step === 0 && (
           <>
             <Field label={t("auth.fullName")}><Input value={form.full_name} onChange={(e) => set("full_name", e.target.value)} className={errCls("full_name")} /></Field>
@@ -307,17 +307,17 @@ function FileDrop({
     <div>
       <Label className="mb-1.5 block">{label}</Label>
       {file ? (
-        <div className="flex items-center justify-between rounded-md border border-success/40 bg-success/10 px-3 py-2.5 text-sm">
+        <div className="flex items-center justify-between rounded-full border border-success/50 bg-success/10 px-4 py-3 text-sm transition-all duration-150">
           <span className="flex items-center gap-2 truncate text-success"><Check className="h-4 w-4 shrink-0" /> <span className="truncate">{file.name}</span></span>
-          <button onClick={onClear} className="text-muted-foreground hover:text-destructive"><X className="h-4 w-4" /></button>
+          <button onClick={onClear} className="rounded-full p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"><X className="h-4 w-4" /></button>
         </div>
       ) : (
         <label
-          className="flex cursor-pointer flex-col items-center gap-1 rounded-md border-2 border-dashed border-border bg-accent/30 px-3 py-5 text-center text-xs text-muted-foreground transition-colors hover:border-primary hover:bg-accent"
+          className="flex cursor-pointer flex-col items-center gap-2 rounded-full border-2 border-dashed border-border bg-accent/40 px-4 py-6 text-center text-xs text-muted-foreground transition-all duration-150 hover:border-primary hover:bg-accent"
           onDragOver={(e) => e.preventDefault()}
           onDrop={(e) => { e.preventDefault(); handle(e.dataTransfer.files?.[0]); }}
         >
-          <Upload className="h-5 w-5 text-primary" />
+          <Upload className="h-6 w-6 text-primary" />
           {t_drop()}
           <input type="file" className="hidden" onChange={(e) => handle(e.target.files?.[0])} accept="image/*,.pdf" />
         </label>

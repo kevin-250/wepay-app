@@ -152,7 +152,7 @@ export function RevenueChart({ payments, loans, isLoading }: RevenueChartProps) 
                   if (active && payload && payload.length) {
                     const data = payload[0].payload;
                     return (
-                      <div className="rounded-xl border border-border bg-popover p-3 shadow-lg">
+                      <div className="rounded-xl border border-border bg-elevated p-3 shadow-lg">
                         <p className="text-xs font-bold text-muted-foreground">{data.date}, 2025</p>
                         <div className="mt-2 space-y-1 text-xs">
                           <p className="flex items-center gap-4 justify-between font-semibold text-primary">

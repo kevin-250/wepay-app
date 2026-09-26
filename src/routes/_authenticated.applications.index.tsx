@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { FilePlus2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { useI18n } from "@/lib/i18n";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,10 +24,16 @@ export const Route = createFileRoute("/_authenticated/applications/")({
 
 function Applications() {
   const { t } = useI18n();
+  const { user } = useAuth();
   const { data: loans = [], isLoading } = useQuery({
-    queryKey: ["loans"],
+    queryKey: ["loans", user?.id],
+    enabled: !!user,
     queryFn: async () => {
-      const { data } = await supabase.from("loans").select("*").order("created_at", { ascending: false });
+      const { data } = await supabase
+        .from("loans")
+        .select("*")
+        .eq("user_id", user!.id)
+        .order("created_at", { ascending: false });
       return data ?? [];
     },
   });

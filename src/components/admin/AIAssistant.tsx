@@ -137,7 +137,7 @@ export function AIAssistant({ loans, payments, docs }: AIAssistantProps) {
       </div>
 
       {/* Chat Input Bar */}
-      <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-2.5 py-1.5 shadow-sm focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-primary/20">
+      <div className="elevation-input flex items-center gap-2 rounded-xl px-2.5 py-1.5">
         <Mic className="h-4 w-4 text-muted-foreground cursor-pointer hover:text-foreground" />
         <input
           type="text"

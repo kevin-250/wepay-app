@@ -2,6 +2,7 @@ import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { AlertCircle, CheckCircle2, Clock, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { useI18n } from "@/lib/i18n";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,11 +18,15 @@ export const Route = createFileRoute("/_authenticated/applications/$id")({
 function ApplicationDetail() {
   const { t } = useI18n();
   const { id } = useParams({ from: "/_authenticated/applications/$id" });
+  const { user, isAdmin } = useAuth();
 
   const { data: loan, isLoading } = useQuery({
-    queryKey: ["loan", id],
+    queryKey: ["loan", id, user?.id, isAdmin],
+    enabled: !!user,
     queryFn: async () => {
-      const { data } = await supabase.from("loans").select("*").eq("id", id).maybeSingle();
+      let q = supabase.from("loans").select("*").eq("id", id);
+      if (!isAdmin) q = q.eq("user_id", user!.id);
+      const { data } = await q.maybeSingle();
       return data;
     },
   });

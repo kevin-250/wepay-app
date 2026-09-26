@@ -97,8 +97,8 @@ function UserRoles() {
       <div className="flex items-center gap-3">
         <UserCog className="h-7 w-7 text-primary" />
         <div>
-          <h1 className="text-2xl font-bold">Role Management</h1>
-          <p className="text-sm text-muted-foreground">View users and manage their roles.</p>
+          <h1 className="text-heading">Role Management</h1>
+          <p className="text-body">View users and manage their roles.</p>
         </div>
       </div>
 
@@ -117,23 +117,23 @@ function UserRoles() {
               return (
                 <div
                   key={u.user_id}
-                  className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between transition-colors hover:bg-accent"
                 >
                   <div className="min-w-0">
-                    <p className="truncate font-medium">{u.full_name ?? "Unnamed user"}</p>
-                    <p className="truncate text-sm text-muted-foreground">
+                    <p className="truncate font-semibold text-foreground">{u.full_name ?? "Unnamed user"}</p>
+                    <p className="truncate text-body">
                       {u.email ?? u.phone ?? u.user_id}
                     </p>
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
                     {u.roles.length === 0 && (
-                      <span className="text-xs text-muted-foreground">No roles</span>
+                      <span className="text-label text-muted-foreground">No roles</span>
                     )}
                     {u.roles.map((r) => (
                       <Badge
                         key={r}
                         variant={r === "admin" ? "default" : "secondary"}
-                        className="gap-1"
+                        className="gap-1 rounded-full px-3 py-1"
                       >
                         {r === "admin" ? (
                           <ShieldCheck className="h-3 w-3" />
@@ -144,7 +144,7 @@ function UserRoles() {
                         {!(isSelf && r === "admin") && (
                           <button
                             aria-label={`Remove ${r}`}
-                            className="ml-0.5 rounded-full hover:bg-black/10"
+                            className="ml-0.5 rounded-full hover:bg-black/10 transition-colors"
                             onClick={() => revoke.mutate({ userId: u.user_id, role: r })}
                           >
                             <X className="h-3 w-3" />
@@ -159,7 +159,7 @@ function UserRoles() {
                         }
                         value=""
                       >
-                        <SelectTrigger className="h-8 w-[130px]">
+                        <SelectTrigger className="h-9 w-[140px]">
                           <SelectValue placeholder="Add role" />
                         </SelectTrigger>
                         <SelectContent>

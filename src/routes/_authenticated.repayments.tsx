@@ -36,6 +36,7 @@ function Repayments() {
       const { data } = await supabase
         .from("loans")
         .select("*")
+        .eq("user_id", user!.id)
         .in("status", ["in_progress", "completed"])
         .order("created_at", { ascending: false })
         .limit(1)
@@ -92,7 +93,8 @@ function Repayments() {
       await supabase
         .from("loans")
         .update({ amount_repaid: newRepaid, status: newRepaid >= total ? "completed" : "in_progress" })
-        .eq("id", loan.id);
+        .eq("id", loan.id)
+        .eq("user_id", user!.id);
       qc.invalidateQueries({ queryKey: ["active-loan", user?.id] });
       qc.invalidateQueries({ queryKey: ["installments", loan.id] });
       toast.success("Payment recorded.");

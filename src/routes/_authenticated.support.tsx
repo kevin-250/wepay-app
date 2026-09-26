@@ -39,7 +39,11 @@ function Support() {
     queryKey: ["messages", user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const { data } = await supabase.from("messages").select("*").order("created_at", { ascending: true });
+      const { data } = await supabase
+        .from("messages")
+        .select("*")
+        .eq("user_id", user!.id)
+        .order("created_at", { ascending: true });
       return data ?? [];
     },
   });
